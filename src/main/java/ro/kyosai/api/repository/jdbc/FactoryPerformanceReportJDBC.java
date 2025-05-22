@@ -48,16 +48,20 @@ public class FactoryPerformanceReportJDBC {
                         rs.getInt("Loss_Timestamp")), startDate, endDate));
     }
 
-    public Optional<List<ReportPerformanceRecord>> getFactoryPerformanceReportByProductId(final String productId) {
-        final String query = FACTORY_PERFORMANCE_REPORT + " WHERE fpr.productId = ?";
+    public List<ReportPerformanceRecord> getPerformanceSumBetween(final LocalDateTime startDate, final LocalDateTime endDate) {
+        String query = """
+                SELECT SUM(fpr.Available_Timestamp) as availableTimestamp, 
+                        SUM(fpr.Production_Timestamp) as productionTimestamp, 
+                        SUM(fpr.Loss_Timestamp) as lossTimestamp
+                FROM Mittal_Reports.dbo.Factory_Performance_Reports fpr
+                WHERE fpr.datetime BETWEEN ? AND ?    
+                        """;
         log.info("Executing query: {}", query);
-        return Optional.ofNullable(jdbcTemplate.query(query,
+        return jdbcTemplate.query(query,
                 (rs, rowNum) -> new ReportPerformanceRecord(
-                        rs.getString("productId"),
-                        rs.getDate("datetime").toLocalDate(),
-                        rs.getInt("Available_Timestamp"),
-                        rs.getInt("Production_Timestamp"),
-                        rs.getInt("Loss_Timestamp")), productId));
+                        rs.getInt("availableTimestamp"),
+                        rs.getInt("productionTimestamp"),
+                        rs.getInt("lossTimestamp")), startDate, endDate);
     }
 
 }
