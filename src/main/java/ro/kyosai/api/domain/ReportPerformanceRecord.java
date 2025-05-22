@@ -17,5 +17,8 @@ public record ReportPerformanceRecord(String productId,
     public ReportPerformanceRecord(String productId, LocalDate datetime) {
         this(productId, datetime, null, null, null);
     }
+    public ReportPerformanceRecord(Integer availableTimestamp, Integer productionTimestamp, Integer lossTimestamp) {
+        this(null, null, availableTimestamp, productionTimestamp, lossTimestamp);
+    }
 
 }
