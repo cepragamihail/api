@@ -20,6 +20,7 @@ import ro.kyosai.api.domain.GuageChartDTO;
 import ro.kyosai.api.domain.GuageChartLegendDTO;
 import ro.kyosai.api.entity.FactoryReport;
 import ro.kyosai.api.repository.FactoryReportRepository;
+import ro.kyosai.api.repository.jdbc.FactoryLineReportJDBC;
 import ro.kyosai.api.repository.jdbc.FactoryPerformanceReportJDBC;
 import ro.kyosai.api.repository.jdbc.FactoryReportJDBC;
 import ro.kyosai.api.service.FactoryReportService;
@@ -41,6 +42,7 @@ public class FactoryReportServiceImplementation implements FactoryReportService 
     private final FactoryPerformanceReportJDBC factoryPerformanceReportJDBC;
     private final FactoryReportRepository factoryReportRepository;
     private final FactoryReportJDBC factoryReportJDBC;
+    private final FactoryLineReportJDBC factoryLineReportJDBC;
 
     public List<FactoryReport> getAllFactoryReportsBetweenDate(String startDate, String endDate) {
         LocalDateTime start = this.parseOrGetDefaulStartDate(startDate);
@@ -83,7 +85,6 @@ public class FactoryReportServiceImplementation implements FactoryReportService 
         LocalDateTime start = this.parseOrGetDefaulStartDate(startDate).minusMonths(2);
         LocalDateTime end = this.parseOrGetDefaulEndDate(endDate);
         log.info("Start date: {}, End date {}", start, end);
-
         List<DonutChartItem> donutChart = getPlaningDonutChartBetweenDate(start, end);
         List<BarChartItem> barChartDTOs = getProductionsBarChartBetweenDate(start, end);
         GuageChartDTO oeeGuageChartDTO = getOEEGuageChartBetweenDate(start, end);
@@ -189,6 +190,14 @@ public class FactoryReportServiceImplementation implements FactoryReportService 
             default:
                 throw new IllegalArgumentException("Invalid measurement type: " + measurementType);
         }
+    }
+
+    @Override
+    public List<?> getFactoryLineReportsBetweenDate(String startDate, String endDate) {
+        LocalDateTime start = this.parseOrGetDefaulStartDate(startDate).minusYears(1);
+        LocalDateTime end = this.parseOrGetDefaulEndDate(endDate);
+        
+        return factoryLineReportJDBC.getReprtsFromFirstIndexTableNamesBetweenDates(start, end);
     }
 
 }
