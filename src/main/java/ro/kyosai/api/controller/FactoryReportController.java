@@ -31,4 +31,11 @@ public class FactoryReportController {
                 
         return ResponseEntity.ok(factoryReportService.getAllFactoryReportsSumBetweenDate(startDate, endDate));
     }
+
+    @GetMapping("/lines")
+    public ResponseEntity<?> getFactoryLineReports(
+            @RequestParam(value = "start", required = false) String startDate,
+            @RequestParam(value = "end", required = false) String endDate){
+        return ResponseEntity.ok(factoryReportService.getFactoryLineReportsBetweenDate(startDate, endDate));
+    }
 }
