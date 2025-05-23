@@ -19,18 +19,18 @@ public class FactoryReportJDBC {
 
     private static final Logger logger = LoggerFactory.getLogger(FactoryReportJDBC.class);
 
-       private static final String FACTORY_REPORT_TOTALS = """
+       private static final String FACTORY_REPORT_SUM = """
             SELECT SUM(OEE) AS oee, SUM(Quality) AS quality, SUM(Availability) AS availability,
                 SUM(Performance) AS performance, SUM(Weight) AS weight
             FROM Factory_Reports
             """;
     private final JdbcTemplate jdbcTemplate;
 
-    public FactoryReportTotalsDTO getFactoryReportTotals() {
+    public FactoryReportTotalsDTO getFactoryReportSum() {
 
-        logger.info("Executing query: {}", FACTORY_REPORT_TOTALS);
+        logger.info("Executing query: {}", FACTORY_REPORT_SUM);
 
-        return jdbcTemplate.queryForObject(FACTORY_REPORT_TOTALS, (rs, rowNum) -> new FactoryReportTotalsDTO(
+        return jdbcTemplate.queryForObject(FACTORY_REPORT_SUM, (rs, rowNum) -> new FactoryReportTotalsDTO(
                 rs.getBigDecimal("oee"),
                 rs.getBigDecimal("quality"),
                 rs.getBigDecimal("availability"),
@@ -39,7 +39,7 @@ public class FactoryReportJDBC {
                 ));
     }
     public FactoryReportTotalsDTO getFactoryReportTotalsBetween(final LocalDateTime startDate, final LocalDateTime endDate) {
-        String sql = String.format("%s WHERE datetime BETWEEN ? AND ?", FACTORY_REPORT_TOTALS);
+        String sql = String.format("%s WHERE datetime BETWEEN ? AND ?", FACTORY_REPORT_SUM);
         logger.info("Executing query: {}", sql);
 
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new FactoryReportTotalsDTO(
@@ -49,7 +49,7 @@ public class FactoryReportJDBC {
                 rs.getBigDecimal("performance"),
                 rs.getBigDecimal("weight")
                 ), startDate, endDate);
-    } 
+    }
 
     public Map<LocalDate, BigDecimal> getFactoryReportWeightBetween(final LocalDateTime startDate, final LocalDateTime endDate) {
         String sql = """

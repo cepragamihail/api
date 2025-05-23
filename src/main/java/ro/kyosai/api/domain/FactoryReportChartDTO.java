@@ -6,10 +6,10 @@ import java.util.List;
 import ro.kyosai.api.domain.Interface.FactoryReportChart;
 
 public record FactoryReportChartDTO(BigInteger id, String title, String shortTitle,
-                          GuageChartDTO oee, List<BarChartItem> production, List<DonutChartItem> plannedTime) implements FactoryReportChart {
+                          GuageChartDTO oee, List<?> production, List<?> plannedTime) implements FactoryReportChart {
                             
     public FactoryReportChartDTO(BigInteger id, String title, String shortTitle,
-            GuageChartDTO oee, List<BarChartItem> production, List<DonutChartItem> plannedTime) {
+            GuageChartDTO oee, List<?> production, List<?> plannedTime) {
         this.id = id;
         this.title = title;
         this.shortTitle = shortTitle;

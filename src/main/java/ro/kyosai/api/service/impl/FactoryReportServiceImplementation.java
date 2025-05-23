@@ -86,7 +86,7 @@ public class FactoryReportServiceImplementation implements FactoryReportService 
 
         List<DonutChartItem> donutChart = getPlaningDonutChartBetweenDate(start, end);
         List<BarChartItem> barChartDTOs = getProductionsBarChartBetweenDate(start, end);
-        GuageChartDTO oeeGuageChartDTO = getOEEGuageChartBetweenDate(startDate, endDate);
+        GuageChartDTO oeeGuageChartDTO = getOEEGuageChartBetweenDate(start, end);
         log.info("OEE Guage Chart: {}", oeeGuageChartDTO);
         log.info("Bar Chart: {}", barChartDTOs);
         log.info("Donut Chart: {}", donutChart);
@@ -136,12 +136,12 @@ public class FactoryReportServiceImplementation implements FactoryReportService 
                         value.toBigInteger(),
                         "#296900",
                         PERCENTAGE_UNITS)));
-        log.info("Productions Bar Chart: {}", productionChart);
+        log.info("Productions Bar Chart: {}", productionChart.size());
         return productionChart;
     }
 
-    public GuageChartDTO getOEEGuageChartBetweenDate(String startDate, String endDate) {
-        FactoryReportTotalsDTO factoryReportTotals = getAllFactoryReportsSumBetweenDate(startDate, endDate);
+    public GuageChartDTO getOEEGuageChartBetweenDate(LocalDateTime start, LocalDateTime end) {
+        FactoryReportTotalsDTO factoryReportTotals = factoryReportJDBC.getFactoryReportTotalsBetween(start, end);
 
         List<GuageChartLegendDTO> guageChartLegends = List.of(
                 this.getGuageChartLegendByMeasurementType(AVAILABILITY,
