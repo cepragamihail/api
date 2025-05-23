@@ -4,10 +4,10 @@ import java.math.BigInteger;
 import java.util.List;
 
 public record FactoryLineDTO(BigInteger id, String title, String shortTitle,
-                          GuageChartDTO oee, List<?> production, DonutChartItem plannedTime) {
+                          GuageChartDTO oee, List<BarChartItem> production, List<DonutChartItem> plannedTime) {
 
-    public FactoryLineDTO( BigInteger id, String title, String shortTitle,
-                       GuageChartDTO oee, List<?> production, DonutChartItem plannedTime) {
+    public FactoryLineDTO(BigInteger id, String title, String shortTitle,
+                       GuageChartDTO oee, List<BarChartItem> production, List<DonutChartItem> plannedTime) {
         this.id = id;
         this.title = title;
         this.shortTitle = shortTitle;
