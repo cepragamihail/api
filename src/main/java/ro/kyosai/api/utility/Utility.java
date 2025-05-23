@@ -3,15 +3,18 @@ package ro.kyosai.api.utility;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public class Utility {
+public final class Utility {
 
+    private Utility() {
+        throw new AssertionError("Cannot instantiate utility class");
+    }
 
     public static long CalculateAndRoundPercentages(int value, int total) throws ArithmeticException {
         return Math.round((value * 100.0) / total);
     }
 
     public static String abbreviateNumber(BigInteger number) throws ArithmeticException {
-        final String[] suffixes = {"", "K", "M", "B", "T"};
+        final String[] suffixes = { "", "K", "M", "B", "T" };
         BigDecimal value = new BigDecimal(number);
         int magnitude = 0;
         final BigDecimal thousand = BigDecimal.valueOf(1000);
@@ -28,6 +31,5 @@ public class Utility {
 
         return formatted + suffixes[magnitude];
     }
-
 
 }
