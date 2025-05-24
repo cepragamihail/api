@@ -1,5 +1,8 @@
 package ro.kyosai.api.service.impl;
 
+import static java.time.format.DateTimeFormatter.ofPattern;
+import static ro.kyosai.api.utility.Utility.abbreviateNumber;
+
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -133,8 +136,9 @@ public class FactoryReportServiceImplementation implements FactoryReportService 
 
         factoryReportJDBC.getFactoryReportWeightBetween(start, end)
                 .forEach((date, value) -> productionChart.add(new BarChartItem(
-                        date.format(DateTimeFormatter.ofPattern("dd")),
+                        date.format(ofPattern("dd")),
                         value.toBigInteger(),
+                        abbreviateNumber(value.toBigInteger()),
                         "#296900",
                         PERCENTAGE_UNITS)));
         log.info("Productions Bar Chart: {}", productionChart.size());
