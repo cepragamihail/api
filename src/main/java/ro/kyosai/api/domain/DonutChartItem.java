@@ -10,4 +10,7 @@ public record DonutChartItem(String name, BigInteger value, String color) {
         this.color = color;
     }
 
+    public static final BigInteger getAsProcentage(final int value, final int total) {
+        return BigInteger.valueOf(Math.round((value * 100.0) / total));
+    }
 }
