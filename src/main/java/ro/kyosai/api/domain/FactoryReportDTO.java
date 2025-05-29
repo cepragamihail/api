@@ -43,6 +43,15 @@ public class FactoryReportDTO {
         this.performance = performance;
         this.quality = quality;
     }
+      public FactoryReportDTO(BigDecimal weight, LocalDate datetime, BigDecimal oee,
+                            BigDecimal availability, BigDecimal performance, BigDecimal quality) {
+        this.weight = weight;
+        this.datetime = datetime;
+        this.oee = oee;
+        this.availability = availability;
+        this.performance = performance;
+        this.quality = quality;
+    }
     // Getters and Setters can be added here if needed
 
     
