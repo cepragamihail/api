@@ -1,7 +1,10 @@
 package ro.kyosai.api.service;
 
+import static ro.kyosai.api.domain.FactoryProductionReportDTO.getAsProcentage;
+import static ro.kyosai.api.domain.FactoryProductionReportDTO.getOEEProcentage;
 import static ro.kyosai.api.utility.Utility.PERCENTAGE_UNITS;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,14 +13,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import ro.kyosai.api.domain.FactoryReportTotalsDTO;
+import ro.kyosai.api.domain.FactoryProductionReportDTO;
 import ro.kyosai.api.domain.GuageChartDTO;
 import ro.kyosai.api.domain.GuageChartLegendDTO;
 import ro.kyosai.api.repository.jdbc.FactoryReportJDBC;
 
 @Service
 public class GuageChartService {
-
 
     private static final String PREFIX_PERFORMANCE = "P";
     private static final String PREFIX_AVAILABILITY = "A";
@@ -27,8 +29,7 @@ public class GuageChartService {
     private static final String QUALITY = "Quality";
     private static final String OEE = "OEE";
 
-
-    Logger log = LoggerFactory.getLogger(GuageChartService.class); 
+    Logger log = LoggerFactory.getLogger(GuageChartService.class);
 
     private final FactoryReportJDBC factoryReportJDBC;
 
@@ -36,25 +37,31 @@ public class GuageChartService {
         this.factoryReportJDBC = factoryReportJDBC;
     }
 
-
-        public GuageChartDTO getFactoryOEEGuageChartBetweenDate(LocalDateTime start, LocalDateTime end) {
-        FactoryReportTotalsDTO factoryReportTotals = factoryReportJDBC.getFactoryReportOfGuageAnalisisChartBetween(start, end);
-
+    public GuageChartDTO getFactoryOEEGuageChartBetweenDate(LocalDateTime start, LocalDateTime end) {
+        FactoryProductionReportDTO factoryProductionReport = factoryReportJDBC
+                .getFactoryReportOfGuageAnalisisChartBetween(start, end);
+        BigDecimal availability = getAsProcentage(
+                factoryProductionReport.productionTimestamp(),
+                factoryProductionReport.availableTimestamp());
+        BigDecimal performance = getAsProcentage(
+                factoryProductionReport.meanSpeed(),
+                factoryProductionReport.idealSpeed());
+        BigDecimal quality = getAsProcentage(
+                factoryProductionReport.goodLinearMeters(),
+                factoryProductionReport.totalLinearMeters());
+        BigDecimal oee = getOEEProcentage(availability, performance, quality);
         List<GuageChartLegendDTO> guageChartLegends = List.of(
-                this.getGuageChartLegendByMeasurementType(AVAILABILITY,
-                        factoryReportTotals.availabilitySum().toBigInteger(), PERCENTAGE_UNITS),
-                this.getGuageChartLegendByMeasurementType(PERFORMANCE,
-                        factoryReportTotals.performanceSum().toBigInteger(), PERCENTAGE_UNITS),
-                this.getGuageChartLegendByMeasurementType(QUALITY, factoryReportTotals.qualitySum().toBigInteger(),
-                        PERCENTAGE_UNITS));
+                this.getGuageChartLegendByMeasurementType(AVAILABILITY, availability.toBigInteger(), PERCENTAGE_UNITS),
+                this.getGuageChartLegendByMeasurementType(PERFORMANCE, performance.toBigInteger(), PERCENTAGE_UNITS),
+                this.getGuageChartLegendByMeasurementType(QUALITY, quality.toBigInteger(), PERCENTAGE_UNITS));
 
         return new GuageChartDTO(
-                factoryReportTotals.oeeSum().toBigInteger(),
+                oee.toBigInteger(),
                 this.getSectorByMasurementType(OEE),
                 guageChartLegends);
     }
 
-        public GuageChartLegendDTO getGuageChartLegendByMeasurementType(String measurementType, BigInteger value,
+    public GuageChartLegendDTO getGuageChartLegendByMeasurementType(String measurementType, BigInteger value,
             String units) {
         switch (measurementType) {
             case OEE:
@@ -72,7 +79,8 @@ public class GuageChartService {
                 throw new IllegalArgumentException("Invalid measurement type: " + measurementType);
         }
     }
-        public List<Integer> getSectorByMasurementType(String measurementType) {
+
+    public List<Integer> getSectorByMasurementType(String measurementType) {
         switch (measurementType) {
             case OEE:
                 return List.of(30, 55, 65, 100);
