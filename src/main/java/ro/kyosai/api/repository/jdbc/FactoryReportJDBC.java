@@ -1,10 +1,12 @@
 package ro.kyosai.api.repository.jdbc;
 
-import static ro.kyosai.api.utility.FactoryReportColumn.AVAILABILITY;
+import static ro.kyosai.api.utility.FactoryReportColumn.AVAILABLE_TIMESTAMP;
 import static ro.kyosai.api.utility.FactoryReportColumn.DATETIME;
-import static ro.kyosai.api.utility.FactoryReportColumn.OEE;
-import static ro.kyosai.api.utility.FactoryReportColumn.PERFORMANCE;
-import static ro.kyosai.api.utility.FactoryReportColumn.QUALITY;
+import static ro.kyosai.api.utility.FactoryReportColumn.GOOD_LINEAR_METERS;
+import static ro.kyosai.api.utility.FactoryReportColumn.IDEAL_SPEED;
+import static ro.kyosai.api.utility.FactoryReportColumn.MEAN_SPEED;
+import static ro.kyosai.api.utility.FactoryReportColumn.PRODUCTION_TIMESTAMP;
+import static ro.kyosai.api.utility.FactoryReportColumn.TOTAL_LINEAR_METERS;
 import static ro.kyosai.api.utility.FactoryReportColumn.WEIGHT;
 import static ro.kyosai.api.utility.FactoryReportColumn.getGuageAnalisisColumnsEnum;
 import static ro.kyosai.api.utility.FactoryReportColumn.getGuageAnalisisColumnsEnumWithDatetime;
@@ -27,7 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import ro.kyosai.api.domain.FactoryReportTotalsDTO;
+import ro.kyosai.api.domain.FactoryProductionReportDTO;
 import ro.kyosai.api.utility.FactoryReportColumn;
 import ro.kyosai.api.utility.QueryBuilder;
 import ro.kyosai.api.utility.Utility;
@@ -51,7 +53,7 @@ public class FactoryReportJDBC {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public FactoryReportTotalsDTO getFactoryReportOfGuageAnalisisChartBetween(final LocalDateTime startDate, final LocalDateTime endDate) {
+    public FactoryProductionReportDTO getFactoryReportOfGuageAnalisisChartBetween(final LocalDateTime startDate, final LocalDateTime endDate) {
 
         String unionAllQuery = this.getUnionAllTableQuery(tableNames, dbName, getGuageAnalisisColumnsEnumWithDatetime());
         String[] guageAnalisisSumColumns = Utility.getColumnsWithSumFunctions(getGuageAnalisisColumnsEnum());
@@ -60,11 +62,13 @@ public class FactoryReportJDBC {
             .where(DATETIME.getColumnName() + " BETWEEN ? AND ?")
             .build();
         log.info("Executing query: {}", query);
-        return jdbcTemplate.queryForObject(query, (rs, rowNum) -> new FactoryReportTotalsDTO(
-            rs.getBigDecimal(OEE.getAlias() + SUM_ALIAS_PREFIX),
-            rs.getBigDecimal(QUALITY.getAlias() + SUM_ALIAS_PREFIX),
-            rs.getBigDecimal(AVAILABILITY.getAlias() + SUM_ALIAS_PREFIX),
-            rs.getBigDecimal(PERFORMANCE.getAlias() + SUM_ALIAS_PREFIX),
+        return jdbcTemplate.queryForObject(query, (rs, rowNum) -> new FactoryProductionReportDTO(
+            rs.getBigDecimal(PRODUCTION_TIMESTAMP.getAlias() + SUM_ALIAS_PREFIX),
+            rs.getBigDecimal(AVAILABLE_TIMESTAMP.getAlias() + SUM_ALIAS_PREFIX),
+            rs.getBigDecimal(MEAN_SPEED.getAlias() + SUM_ALIAS_PREFIX),
+            rs.getBigDecimal(IDEAL_SPEED.getAlias() + SUM_ALIAS_PREFIX),
+            rs.getBigDecimal(GOOD_LINEAR_METERS.getAlias() + SUM_ALIAS_PREFIX),
+            rs.getBigDecimal(TOTAL_LINEAR_METERS.getAlias() + SUM_ALIAS_PREFIX),
             rs.getBigDecimal(WEIGHT.getAlias() + SUM_ALIAS_PREFIX)
         ), startDate, endDate);
     }
@@ -73,7 +77,6 @@ public class FactoryReportJDBC {
         String unionAllQuery = this.getUnionAllTableQuery(tableNames, dbName, DATETIME, WEIGHT);
         String datetimeWithCastColumn = getColumnWhitsCastASDate(DATETIME.getColumnName(), DAY_ALIAS);
         String weightSumColumns = Utility.getColumnWithSumFunctions(WEIGHT.getColumnName(), WEIGHT.getAlias());
-        // Add the datetime column with cast to 
 
         String query = new QueryBuilder().select(datetimeWithCastColumn, weightSumColumns)
             .fromSubquery(unionAllQuery)
