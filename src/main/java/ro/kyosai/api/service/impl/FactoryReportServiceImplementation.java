@@ -14,12 +14,10 @@ import lombok.AllArgsConstructor;
 import ro.kyosai.api.domain.BarChartItem;
 import ro.kyosai.api.domain.DonutChartItem;
 import ro.kyosai.api.domain.FactoryReportChartDTO;
-import ro.kyosai.api.domain.FactoryReportTotalsDTO;
 import ro.kyosai.api.domain.GuageChartDTO;
 import ro.kyosai.api.entity.FactoryReport;
 import ro.kyosai.api.repository.FactoryReportRepository;
 import ro.kyosai.api.repository.jdbc.FactoryLineReportJDBC;
-import ro.kyosai.api.repository.jdbc.FactoryReportJDBC;
 import ro.kyosai.api.service.BarChartService;
 import ro.kyosai.api.service.FactoryReportService;
 import ro.kyosai.api.service.GuageChartService;
@@ -35,7 +33,6 @@ public class FactoryReportServiceImplementation implements FactoryReportService 
     private final PlaningDonutChartService planingDonutChartService;
 
     private final FactoryReportRepository factoryReportRepository;
-    private final FactoryReportJDBC factoryReportJDBC;
     private final FactoryLineReportJDBC factoryLineReportJDBC;
     private final BarChartService barChartService;
     private final GuageChartService guageChartService;
@@ -44,7 +41,6 @@ public class FactoryReportServiceImplementation implements FactoryReportService 
         LocalDateTime start = this.parseOrGetDefaulStartDate(startDate);
         LocalDateTime end = this.parseOrGetDefaulEndDate(endDate);
         log.info("Start date: {}, End date {}", start, end);
-        getAllFactoryReportsSumBetweenDate(startDate, endDate);
         return factoryReportRepository.findByDatetimeBetween(start, end);
     }
 
@@ -63,23 +59,11 @@ public class FactoryReportServiceImplementation implements FactoryReportService 
         return LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS));
     }
 
-    public FactoryReportTotalsDTO getAllFactoryReportsSumBetweenDate(String startDate, String endDate) {
-        LocalDateTime start = this.parseOrGetDefaulStartDate(startDate).minusMonths(2);
-        LocalDateTime end = this.parseOrGetDefaulEndDate(endDate);
-        log.info("Sum of Factory Reports between {} and {}", start, end);
-
-        FactoryReportTotalsDTO factoryReportTotals = factoryReportJDBC.getFactoryReportOfGuageAnalisisChartBetween(start, end);
-
-        log.info("OEE: {}, Quality: {}, Availability: {}, Performance: {}, Weight: {}",
-                factoryReportTotals.oeeSum(), factoryReportTotals.qualitySum(), factoryReportTotals.availabilitySum(),
-                factoryReportTotals.performanceSum(), factoryReportTotals.weightSum());
-        return factoryReportTotals;
-    }
-
     public FactoryReportChartDTO getFactoryReportChartsBetweenDate(String startDate, String endDate) {
 
         LocalDateTime start = this.parseOrGetDefaulStartDate(startDate).minusMonths(2);
-        LocalDateTime end = this.parseOrGetDefaulEndDate(endDate);
+        LocalDateTime end = this.parseOrGetDefaulEndDate(endDate); 
+
         log.info("Start date: {}, End date {}", start, end);
         List<DonutChartItem> donutChart = planingDonutChartService.getFactoryPlaningDonutChartBetweenDate(start, end);
         List<BarChartItem> barChartDTOs =  barChartService.getFactoryProductionsBarChartBetweenDate(start, end);
