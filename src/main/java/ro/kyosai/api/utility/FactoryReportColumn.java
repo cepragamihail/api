@@ -52,20 +52,24 @@ public enum FactoryReportColumn {
 
     public static final FactoryReportColumn[] getGuageAnalisisColumnsEnum() {
         return new FactoryReportColumn[]{
-            OEE,
-            QUALITY,
-            AVAILABILITY,
-            PERFORMANCE,
+            PRODUCTION_TIMESTAMP,
+            AVAILABLE_TIMESTAMP,
+            MEAN_SPEED,
+            IDEAL_SPEED,
+            GOOD_LINEAR_METERS,
+            TOTAL_LINEAR_METERS,
             WEIGHT
         };
     }
     public static final FactoryReportColumn[] getGuageAnalisisColumnsEnumWithDatetime() {
         return new FactoryReportColumn[]{
             DATETIME,
-            OEE,
-            QUALITY,
-            AVAILABILITY,
-            PERFORMANCE,
+            PRODUCTION_TIMESTAMP,
+            AVAILABLE_TIMESTAMP,
+            MEAN_SPEED,
+            IDEAL_SPEED,
+            GOOD_LINEAR_METERS,
+            TOTAL_LINEAR_METERS,
             WEIGHT
         };
     }
