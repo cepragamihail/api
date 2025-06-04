@@ -1,7 +1,7 @@
 package ro.kyosai.api.service;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
-import static ro.kyosai.api.utility.Utility.PERCENTAGE_UNITS;
+import static ro.kyosai.api.utility.Utility.TONE_UNITS;
 import static ro.kyosai.api.utility.Utility.abbreviateNumber;
 
 import java.time.LocalDateTime;
@@ -35,7 +35,7 @@ public class BarChartService {
                         value.toBigInteger(),
                         abbreviateNumber(value.toBigInteger()),
                         "#296900",
-                        PERCENTAGE_UNITS)));
+                        TONE_UNITS)));
         log.info("Factory Productions Bar Chart: {}", productionChart.size());
         return productionChart;
     }
