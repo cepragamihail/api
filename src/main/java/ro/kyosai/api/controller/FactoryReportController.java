@@ -24,14 +24,6 @@ public class FactoryReportController {
         return ResponseEntity.ok(factoryReportService.getFactoryReportChartsBetweenDate(startDate, endDate));
     }
 
-    @GetMapping("/totals")
-    public ResponseEntity<FactoryReportTotalsDTO> getAllFactoryReportsSum(
-            @RequestParam(value = "start", required = false) String startDate,
-            @RequestParam(value = "end", required = false) String endDate){
-                
-        return ResponseEntity.ok(factoryReportService.getAllFactoryReportsSumBetweenDate(startDate, endDate));
-    }
-
     @GetMapping("/lines")
     public ResponseEntity<?> getFactoryLineReports(
             @RequestParam(value = "start", required = false) String startDate,
