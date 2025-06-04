@@ -14,6 +14,7 @@ public final class Utility {
     public static final String DELIMITER = "_";
     public static final String TABLE_ALIAS_PREFIX = "tar";
     public static final String PERCENTAGE_UNITS = "%";
+    public static final String TONE_UNITS = "t";
 
     public static final String QUALITY = "quality";
     public static final String PERFORMANCE = "performance";
