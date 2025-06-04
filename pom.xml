@@ -12,7 +12,7 @@
 	<artifactId>api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>api</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Industry 4.0 performance analysis integration API</description>
 	<url/>
 	<licenses>
 		<license/>
