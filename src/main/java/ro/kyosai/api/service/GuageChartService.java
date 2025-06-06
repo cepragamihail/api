@@ -56,6 +56,8 @@ public class GuageChartService {
                 this.getGuageChartLegendByMeasurementType(QUALITY, quality.toBigInteger(), PERCENTAGE_UNITS));
 
         return new GuageChartDTO(
+                OEE,
+                OEE,
                 oee.toBigInteger(),
                 this.getSectorByMasurementType(OEE),
                 guageChartLegends);
