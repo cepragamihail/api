@@ -83,18 +83,13 @@ public class GaugeChartService {
     }
 
     public List<Integer> getSectorByMeasurementType(String measurementType) {
-        switch (measurementType) {
-            case OEE:
-                return List.of(30, 55, 65, 100);
-            case QUALITY:
-                return List.of(85, 90, 95, 100);
-            case AVAILABILITY:
-                return List.of(30, 55, 65, 100);
-            case PERFORMANCE:
-                return List.of(60, 75, 85, 100);
-            default:
-                throw new IllegalArgumentException("Invalid measurement type: " + measurementType);
-        }
+        return switch (measurementType) {
+            case OEE -> List.of(30, 55, 65, 100);
+            case QUALITY -> List.of(85, 90, 95, 100);
+            case AVAILABILITY -> List.of(30, 55, 65, 100);
+            case PERFORMANCE -> List.of(60, 75, 85, 100);
+            default -> throw new IllegalArgumentException("Invalid measurement type: " + measurementType);
+        };
     }
 
 }
