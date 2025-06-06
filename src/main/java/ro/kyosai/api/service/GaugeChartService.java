@@ -14,12 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import ro.kyosai.api.domain.FactoryProductionReportDTO;
-import ro.kyosai.api.domain.GuageChartDTO;
-import ro.kyosai.api.domain.GuageChartLegendDTO;
+import ro.kyosai.api.domain.GaugeChartDTO;
+import ro.kyosai.api.domain.GaugeChartLegendDTO;
 import ro.kyosai.api.repository.jdbc.FactoryReportJDBC;
 
 @Service
-public class GuageChartService {
+public class GaugeChartService {
 
     private static final String PREFIX_PERFORMANCE = "P";
     private static final String PREFIX_AVAILABILITY = "A";
@@ -29,15 +29,15 @@ public class GuageChartService {
     private static final String QUALITY = "Quality";
     private static final String OEE = "OEE";
 
-    Logger log = LoggerFactory.getLogger(GuageChartService.class);
+    Logger log = LoggerFactory.getLogger(GaugeChartService.class);
 
     private final FactoryReportJDBC factoryReportJDBC;
 
-    public GuageChartService(FactoryReportJDBC factoryReportJDBC) {
+    public GaugeChartService(FactoryReportJDBC factoryReportJDBC) {
         this.factoryReportJDBC = factoryReportJDBC;
     }
 
-    public GuageChartDTO getFactoryOEEGuageChartBetweenDate(LocalDateTime start, LocalDateTime end) {
+    public GaugeChartDTO getFactoryOEEGaugeChartBetweenDate(LocalDateTime start, LocalDateTime end) {
         FactoryProductionReportDTO factoryProductionReport = factoryReportJDBC
                 .getFactoryReportOfGuageAnalisisChartBetween(start, end);
         BigDecimal availability = getAsProcentage(
@@ -50,39 +50,39 @@ public class GuageChartService {
                 factoryProductionReport.goodLinearMeters(),
                 factoryProductionReport.totalLinearMeters());
         BigDecimal oee = getOEEProcentage(availability, performance, quality);
-        List<GuageChartLegendDTO> guageChartLegends = List.of(
-                this.getGuageChartLegendByMeasurementType(AVAILABILITY, availability.toBigInteger(), PERCENTAGE_UNITS),
-                this.getGuageChartLegendByMeasurementType(PERFORMANCE, performance.toBigInteger(), PERCENTAGE_UNITS),
-                this.getGuageChartLegendByMeasurementType(QUALITY, quality.toBigInteger(), PERCENTAGE_UNITS));
+        List<GaugeChartLegendDTO> gaugeChartLegends = List.of(
+                this.getGaugeChartLegendByMeasurementType(AVAILABILITY, availability.toBigInteger(), PERCENTAGE_UNITS),
+                this.getGaugeChartLegendByMeasurementType(PERFORMANCE, performance.toBigInteger(), PERCENTAGE_UNITS),
+                this.getGaugeChartLegendByMeasurementType(QUALITY, quality.toBigInteger(), PERCENTAGE_UNITS));
 
-        return new GuageChartDTO(
+        return new GaugeChartDTO(
                 OEE,
                 OEE,
                 oee.toBigInteger(),
-                this.getSectorByMasurementType(OEE),
-                guageChartLegends);
+                this.getSectorByMeasurementType(OEE),
+                gaugeChartLegends);
     }
 
-    public GuageChartLegendDTO getGuageChartLegendByMeasurementType(String measurementType, BigInteger value,
-            String units) {
+    public GaugeChartLegendDTO getGaugeChartLegendByMeasurementType(String measurementType, BigInteger value,
+                                                                    String units) {
         switch (measurementType) {
             case OEE:
-                return new GuageChartLegendDTO(value, this.getSectorByMasurementType(OEE), OEE, OEE, units);
+                return new GaugeChartLegendDTO(value, this.getSectorByMeasurementType(OEE), OEE, OEE, units);
             case QUALITY:
-                return new GuageChartLegendDTO(value, this.getSectorByMasurementType(QUALITY), QUALITY, PREFIX_QUALITY,
+                return new GaugeChartLegendDTO(value, this.getSectorByMeasurementType(QUALITY), QUALITY, PREFIX_QUALITY,
                         units);
             case AVAILABILITY:
-                return new GuageChartLegendDTO(value, this.getSectorByMasurementType(AVAILABILITY), AVAILABILITY,
+                return new GaugeChartLegendDTO(value, this.getSectorByMeasurementType(AVAILABILITY), AVAILABILITY,
                         PREFIX_AVAILABILITY, units);
             case PERFORMANCE:
-                return new GuageChartLegendDTO(value, this.getSectorByMasurementType(PERFORMANCE), PERFORMANCE,
+                return new GaugeChartLegendDTO(value, this.getSectorByMeasurementType(PERFORMANCE), PERFORMANCE,
                         PREFIX_PERFORMANCE, units);
             default:
                 throw new IllegalArgumentException("Invalid measurement type: " + measurementType);
         }
     }
 
-    public List<Integer> getSectorByMasurementType(String measurementType) {
+    public List<Integer> getSectorByMeasurementType(String measurementType) {
         switch (measurementType) {
             case OEE:
                 return List.of(30, 55, 65, 100);

@@ -14,13 +14,13 @@ import lombok.AllArgsConstructor;
 import ro.kyosai.api.domain.BarChartItem;
 import ro.kyosai.api.domain.DonutChartItem;
 import ro.kyosai.api.domain.FactoryReportChartDTO;
-import ro.kyosai.api.domain.GuageChartDTO;
+import ro.kyosai.api.domain.GaugeChartDTO;
 import ro.kyosai.api.entity.FactoryReport;
 import ro.kyosai.api.repository.FactoryReportRepository;
 import ro.kyosai.api.repository.jdbc.FactoryLineReportJDBC;
 import ro.kyosai.api.service.BarChartService;
 import ro.kyosai.api.service.FactoryReportService;
-import ro.kyosai.api.service.GuageChartService;
+import ro.kyosai.api.service.GaugeChartService;
 import ro.kyosai.api.service.PlaningDonutChartService;
 
 @AllArgsConstructor
@@ -35,23 +35,23 @@ public class FactoryReportServiceImplementation implements FactoryReportService 
     private final FactoryReportRepository factoryReportRepository;
     private final FactoryLineReportJDBC factoryLineReportJDBC;
     private final BarChartService barChartService;
-    private final GuageChartService guageChartService;
+    private final GaugeChartService gaugeChartService;
 
     public List<FactoryReport> getAllFactoryReportsBetweenDate(String startDate, String endDate) {
-        LocalDateTime start = this.parseOrGetDefaulStartDate(startDate);
-        LocalDateTime end = this.parseOrGetDefaulEndDate(endDate);
+        LocalDateTime start = this.parseOrGetDefaultStartDate(startDate);
+        LocalDateTime end = this.parseOrGetDefaultEndDate(endDate);
         log.info("Start date: {}, End date {}", start, end);
         return factoryReportRepository.findByDatetimeBetween(start, end);
     }
 
-    private LocalDateTime parseOrGetDefaulEndDate(String endDate) throws DateTimeParseException {
+    private LocalDateTime parseOrGetDefaultEndDate(String endDate) throws DateTimeParseException {
         if (endDate == null || endDate.isEmpty()) {
             return LocalDateTime.now();
         }
         return LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS));
     }
 
-    private LocalDateTime parseOrGetDefaulStartDate(String startDate) throws DateTimeParseException {
+    private LocalDateTime parseOrGetDefaultStartDate(String startDate) throws DateTimeParseException {
         if (startDate == null || startDate.isEmpty()) {
             LocalDateTime now = LocalDateTime.now();
             return now.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
@@ -61,13 +61,13 @@ public class FactoryReportServiceImplementation implements FactoryReportService 
 
     public FactoryReportChartDTO getFactoryReportChartsBetweenDate(String startDate, String endDate) {
 
-        LocalDateTime start = this.parseOrGetDefaulStartDate(startDate).minusMonths(2);
-        LocalDateTime end = this.parseOrGetDefaulEndDate(endDate); 
+        LocalDateTime start = this.parseOrGetDefaultStartDate(startDate).minusMonths(2);
+        LocalDateTime end = this.parseOrGetDefaultEndDate(endDate);
 
         log.info("Start date: {}, End date {}", start, end);
         List<DonutChartItem> donutChart = planingDonutChartService.getFactoryPlaningDonutChartBetweenDate(start, end);
         List<BarChartItem> barChartDTOs =  barChartService.getFactoryProductionsBarChartBetweenDate(start, end);
-        GuageChartDTO oeeGuageChartDTO = guageChartService.getFactoryOEEGuageChartBetweenDate(start, end);
+        GaugeChartDTO oeeGuageChartDTO = gaugeChartService.getFactoryOEEGaugeChartBetweenDate(start, end);
         log.info("OEE Guage Chart: {}", oeeGuageChartDTO);
         log.info("Bar Chart: {}", barChartDTOs);
         log.info("Donut Chart: {}", donutChart);
@@ -84,8 +84,8 @@ public class FactoryReportServiceImplementation implements FactoryReportService 
 
     @Override
     public List<?> getFactoryLineReportsBetweenDate(String startDate, String endDate) {
-        LocalDateTime start = this.parseOrGetDefaulStartDate(startDate).minusYears(1);
-        LocalDateTime end = this.parseOrGetDefaulEndDate(endDate);
+        LocalDateTime start = this.parseOrGetDefaultStartDate(startDate).minusYears(1);
+        LocalDateTime end = this.parseOrGetDefaultEndDate(endDate);
 
         factoryLineReportJDBC.getPerformanceSumBetween(start, end)
                 .forEach(performance -> log.info("Performance: {}", performance));
