@@ -9,8 +9,6 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import ro.kyosai.api.domain.FactoryProductionReportDTO;
@@ -28,8 +26,6 @@ public class GaugeChartService {
     private static final String AVAILABILITY = "Availability";
     private static final String QUALITY = "Quality";
     private static final String OEE = "OEE";
-
-    Logger log = LoggerFactory.getLogger(GaugeChartService.class);
 
     private final FactoryReportJDBC factoryReportJDBC;
 
@@ -65,21 +61,19 @@ public class GaugeChartService {
 
     public GaugeChartLegendDTO getGaugeChartLegendByMeasurementType(String measurementType, BigInteger value,
                                                                     String units) {
-        switch (measurementType) {
-            case OEE:
-                return new GaugeChartLegendDTO(value, this.getSectorByMeasurementType(OEE), OEE, OEE, units);
-            case QUALITY:
-                return new GaugeChartLegendDTO(value, this.getSectorByMeasurementType(QUALITY), QUALITY, PREFIX_QUALITY,
-                        units);
-            case AVAILABILITY:
-                return new GaugeChartLegendDTO(value, this.getSectorByMeasurementType(AVAILABILITY), AVAILABILITY,
-                        PREFIX_AVAILABILITY, units);
-            case PERFORMANCE:
-                return new GaugeChartLegendDTO(value, this.getSectorByMeasurementType(PERFORMANCE), PERFORMANCE,
-                        PREFIX_PERFORMANCE, units);
-            default:
-                throw new IllegalArgumentException("Invalid measurement type: " + measurementType);
-        }
+        return switch (measurementType) {
+            case OEE -> new GaugeChartLegendDTO(value, this.getSectorByMeasurementType(OEE), OEE, OEE, units);
+            case QUALITY ->
+                    new GaugeChartLegendDTO(value, this.getSectorByMeasurementType(QUALITY), QUALITY, PREFIX_QUALITY,
+                            units);
+            case AVAILABILITY ->
+                    new GaugeChartLegendDTO(value, this.getSectorByMeasurementType(AVAILABILITY), AVAILABILITY,
+                            PREFIX_AVAILABILITY, units);
+            case PERFORMANCE ->
+                    new GaugeChartLegendDTO(value, this.getSectorByMeasurementType(PERFORMANCE), PERFORMANCE,
+                            PREFIX_PERFORMANCE, units);
+            default -> throw new IllegalArgumentException("Invalid measurement type: " + measurementType);
+        };
     }
 
     public List<Integer> getSectorByMeasurementType(String measurementType) {
