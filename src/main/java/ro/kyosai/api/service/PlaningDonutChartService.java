@@ -1,6 +1,6 @@
 package ro.kyosai.api.service;
 
-import static ro.kyosai.api.domain.DonutChartItem.getAsProcentage;
+import static ro.kyosai.api.domain.DonutChartItem.getAsPercentage;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -57,9 +57,9 @@ public class PlaningDonutChartService {
         }
 
         return List.of(
-                new DonutChartItem("Unplanned time", getAsProcentage(available, total), "#23B574"),
-                new DonutChartItem("Production time", getAsProcentage(production, total), "#8CC63E"),
-                new DonutChartItem("Stop loss", getAsProcentage(loss, total), "#29AAE3"));
+                new DonutChartItem("Unplanned time", getAsPercentage(available, total), "#23B574"),
+                new DonutChartItem("Production time", getAsPercentage(production, total), "#8CC63E"),
+                new DonutChartItem("Stop loss", getAsPercentage(loss, total), "#29AAE3"));
     }
 
     
